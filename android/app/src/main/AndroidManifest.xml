@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.chatter_gpt">
+    package="com.riku1227.chatter_gpt">
    <application
         android:label="chatter_gpt"
         android:name="${applicationName}"
