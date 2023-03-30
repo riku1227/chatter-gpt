@@ -1,4 +1,9 @@
+import 'dart:convert';
+
 import 'package:chatter_gpt/components/widget/chat_card.dart';
+import 'package:chatter_gpt/model/secret_box_model.dart';
+import 'package:chatter_gpt/repository/preference_repository.dart';
+import 'package:cryptography/cryptography.dart';
 import 'package:dart_openai/openai.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -31,9 +36,7 @@ class MyHomePage extends ConsumerWidget with WidgetsBindingObserver {
       return true;
     }
 
-    /// SharedPreferencesからAPIキーを取得する
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? apiKey = prefs.getString("open_ai_api_key");
+    String? apiKey = await PreferenceRepository.getOpenAIAPIKey();
 
     /// PreferencesにAPIキーが存在したらAPIキーをセットして処理を終了する
     if (apiKey != null) {
@@ -50,7 +53,7 @@ class MyHomePage extends ConsumerWidget with WidgetsBindingObserver {
       /// 結果がnull以外だったらAPIキーをセットする
       if (result != null) {
         apiKeyState.setAPIKey(result);
-        await prefs.setString("open_ai_api_key", result);
+        await PreferenceRepository.setOpenAIAPIKey(result);
       }
     }
     return true;
