@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../l10n/l10n.dart';
+
 final errorTextProvider = StateProvider<String?>((_) => null);
 
 class ApiKeyInputDialog extends ConsumerWidget {
@@ -12,13 +14,14 @@ class ApiKeyInputDialog extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final errorText = ref.watch(errorTextProvider);
+    final l10n = L10n.of(context)!;
 
     return AlertDialog(
-      title: const Text('API Key'),
+      title: Text(l10n.dialog_api_key_title),
       content: TextField(
         controller: apiKeyInputController,
         decoration: InputDecoration(
-          hintText: 'Enter your Open AI API key',
+          hintText: l10n.dialog_api_key_textfield,
           errorText: errorText,
         ),
       ),
@@ -31,7 +34,8 @@ class ApiKeyInputDialog extends ConsumerWidget {
             if (openAiAPIKeyRegExp.hasMatch(text)) {
               Navigator.of(context).pop(apiKeyInputController.text);
             } else {
-              ref.read(errorTextProvider.notifier).state = 'Invalid API Key';
+              ref.read(errorTextProvider.notifier).state =
+                  l10n.dialog_api_key_textfield_error;
             }
           },
         ),

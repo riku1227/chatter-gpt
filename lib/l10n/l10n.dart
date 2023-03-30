@@ -105,6 +105,24 @@ abstract class L10n {
   /// **'Clear chat history/memory'**
   String get main_chat_clear_memory;
 
+  /// No description provided for @dialog_api_key_title.
+  ///
+  /// In en, this message translates to:
+  /// **'API Key'**
+  String get dialog_api_key_title;
+
+  /// No description provided for @dialog_api_key_textfield.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your Open AI API key'**
+  String get dialog_api_key_textfield;
+
+  /// No description provided for @dialog_api_key_textfield_error.
+  ///
+  /// In en, this message translates to:
+  /// **'The entered value is not an API key'**
+  String get dialog_api_key_textfield_error;
+
   /// No description provided for @main_chat_send.
   ///
   /// In en, this message translates to:

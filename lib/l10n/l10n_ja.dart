@@ -11,6 +11,15 @@ class L10nJa extends L10n {
   String get main_chat_clear_memory => 'チャット履歴/記憶を削除する';
 
   @override
+  String get dialog_api_key_title => 'APIキー';
+
+  @override
+  String get dialog_api_key_textfield => 'Open AIのAPIキーを入力してください';
+
+  @override
+  String get dialog_api_key_textfield_error => '入力された値はAPIキーではありません';
+
+  @override
   String get main_chat_send => 'チャットを送信する';
 
   @override

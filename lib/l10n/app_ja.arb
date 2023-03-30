@@ -3,6 +3,9 @@
     "main_chat_input_textfield": "チャットをここに入力",
     "main_chat_clear_memory": "チャット履歴/記憶を削除する",
     "main_chat_send": "チャットを送信する",
+    "dialog_api_key_title": "APIキー",
+    "dialog_api_key_textfield": "Open AIのAPIキーを入力してください",
+    "dialog_api_key_textfield_error": "入力された値はAPIキーではありません",
     "error_message": "エラーが発生しました",
     "loading_message": "読み込み中..."
 }

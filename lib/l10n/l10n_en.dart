@@ -11,6 +11,15 @@ class L10nEn extends L10n {
   String get main_chat_clear_memory => 'Clear chat history/memory';
 
   @override
+  String get dialog_api_key_title => 'API Key';
+
+  @override
+  String get dialog_api_key_textfield => 'Enter your Open AI API key';
+
+  @override
+  String get dialog_api_key_textfield_error => 'The entered value is not an API key';
+
+  @override
   String get main_chat_send => 'Send chat';
 
   @override
