@@ -1,0 +1,9 @@
+{
+    "@@locale": "en",
+    "@@TRANSLATE BY": "CHAT GPT",
+    "main_chat_input_textfield": "Chat here.",
+    "main_chat_clear_memory": "Clear chat history/memory",
+    "main_chat_send": "Send chat",
+    "error_message": "An error has occurred",
+    "loading_message": "Loading..."
+}

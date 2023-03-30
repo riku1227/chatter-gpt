@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:chatter_gpt/components/widget/chat_card.dart';
+import 'package:chatter_gpt/l10n/l10n.dart';
 import 'package:chatter_gpt/model/secret_box_model.dart';
 import 'package:chatter_gpt/repository/preference_repository.dart';
 import 'package:cryptography/cryptography.dart';
@@ -62,7 +63,7 @@ class MyHomePage extends ConsumerWidget with WidgetsBindingObserver {
   }
 
   /// チャットを送信してチャットメモリにその内容を追加する
-  postChat(WidgetRef ref) async {
+  postChat(WidgetRef ref, {required String errorMessage}) async {
     // チャットメモリのStateを取得
     var chatMemoryState = ref.watch(chatMemoryProvider.notifier);
 
@@ -124,7 +125,7 @@ class MyHomePage extends ConsumerWidget with WidgetsBindingObserver {
         ...chatMemoryState.state,
         OpenAIChatCompletionChoiceMessageModel(
           role: OpenAIChatMessageRole.assistant,
-          content: "エラーが発生しました\n${e.toString()}",
+          content: "$errorMessage\n${e.toString()}",
         )
       ];
     }
@@ -132,6 +133,7 @@ class MyHomePage extends ConsumerWidget with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = L10n.of(context)!;
     final chatMemory = ref.watch(chatMemoryProvider);
     final chatMemoryState = ref.watch(chatMemoryProvider.notifier);
 
@@ -143,7 +145,7 @@ class MyHomePage extends ConsumerWidget with WidgetsBindingObserver {
             future: getAPIKey(context, ref),
             builder: (context, snapshot) {
               if (snapshot.data == null) {
-                return const Text("Loading...");
+                return Text(l10n.loading_message);
               }
 
               return Column(
@@ -181,6 +183,7 @@ class MyHomePage extends ConsumerWidget with WidgetsBindingObserver {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         IconButton(
+                          tooltip: l10n.main_chat_clear_memory,
                           onPressed: () {
                             chatMemoryState.state = [];
                           },
@@ -195,14 +198,15 @@ class MyHomePage extends ConsumerWidget with WidgetsBindingObserver {
                                       .isKeyPressed(LogicalKeyboardKey.enter) &&
                                   !value.isShiftPressed) {
                                 isEnter = true;
-                                await postChat(ref);
+                                await postChat(ref,
+                                    errorMessage: l10n.error_message);
                               }
                             },
                             child: TextField(
                                 minLines: 1,
                                 maxLines: 2,
-                                decoration: const InputDecoration(
-                                  hintText: "チャットをここに入力",
+                                decoration: InputDecoration(
+                                  hintText: l10n.main_chat_input_textfield,
                                 ),
                                 controller: ref.watch(chatControllerProvider),
                                 onChanged: (value) {
@@ -219,8 +223,10 @@ class MyHomePage extends ConsumerWidget with WidgetsBindingObserver {
                         const SizedBox(width: 8),
                         IconButton(
                           onPressed: () async {
-                            await postChat(ref);
+                            await postChat(ref,
+                                errorMessage: l10n.error_message);
                           },
+                          tooltip: l10n.main_chat_send,
                           icon: const Icon(Icons.send),
                         )
                       ],
