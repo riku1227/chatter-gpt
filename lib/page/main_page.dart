@@ -48,7 +48,9 @@ class MyHomePage extends ConsumerWidget with WidgetsBindingObserver {
     if (context.mounted) {
       /// APIキーを入力するダイアログを表示する
       var result = await showDialog<String>(
-          context: context, builder: (_) => ApiKeyInputDialog());
+          barrierDismissible: false,
+          context: context,
+          builder: (_) => ApiKeyInputDialog());
 
       /// 結果がnull以外だったらAPIキーをセットする
       if (result != null) {
