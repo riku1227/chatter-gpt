@@ -80,17 +80,44 @@ class MyHomePage extends ConsumerWidget with WidgetsBindingObserver {
 
     try {
       // Chat GPT APIに送ってレスポンスを取得
-      OpenAIChatCompletionModel chatResponse =
-          await OpenAI.instance.chat.create(
+      Stream<OpenAIStreamChatCompletionModel> chatStream =
+          OpenAI.instance.chat.createStream(
         model: "gpt-3.5-turbo",
         messages: chatMemoryState.state,
       );
 
       // チャットメモリに返ってきたメッセージを追加
-      chatMemoryState.state = [
+      /* chatMemoryState.state = [
         ...chatMemoryState.state,
         chatResponse.choices[0].message
-      ];
+      ]; */
+
+      var isFirst = true;
+      chatStream.listen((chatResponse) {
+        if (isFirst) {
+          chatMemoryState.state = [
+            ...chatMemoryState.state,
+            OpenAIChatCompletionChoiceMessageModel(
+              role: OpenAIChatMessageRole.user,
+              content: "",
+            )
+          ];
+          isFirst = false;
+        }
+        final appendMessage = chatResponse.choices[0].delta.content;
+        if (appendMessage == null) {
+          return;
+        }
+        var currentMessage =
+            chatMemoryState.state[chatMemoryState.state.length - 1].content;
+        chatMemoryState.state = [
+          ...chatMemoryState.state.sublist(0, chatMemoryState.state.length - 1),
+          OpenAIChatCompletionChoiceMessageModel(
+            role: OpenAIChatMessageRole.assistant,
+            content: currentMessage + appendMessage,
+          )
+        ];
+      });
     } catch (e) {
       // エラーが発生した場合はエラーメッセージををチャットメモリに追加する
       chatMemoryState.state = [
