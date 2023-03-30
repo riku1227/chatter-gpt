@@ -19,7 +19,7 @@ class MyApp extends ConsumerWidget {
           useMaterial3: true,
           colorSchemeSeed: const Color.fromARGB(255, 210, 138, 203),
           brightness: Brightness.dark),
-      home: const MyHomePage(),
+      home: MyHomePage(),
     );
   }
 }

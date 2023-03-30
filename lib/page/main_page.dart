@@ -17,7 +17,9 @@ final chatMemoryProvider =
     StateProvider<List<OpenAIChatCompletionChoiceMessageModel>>((ref) => []);
 
 class MyHomePage extends ConsumerWidget with WidgetsBindingObserver {
-  const MyHomePage({Key? key}) : super(key: key);
+  MyHomePage({Key? key}) : super(key: key);
+
+  var isEnter = false;
 
   /// APIキーを取得してセットする
   getAPIKey(BuildContext context, WidgetRef ref) async {
@@ -52,6 +54,48 @@ class MyHomePage extends ConsumerWidget with WidgetsBindingObserver {
       }
     }
     return true;
+  }
+
+  /// チャットを送信してチャットメモリにその内容を追加する
+  postChat(WidgetRef ref) async {
+    // チャットメモリのStateを取得
+    var chatMemoryState = ref.watch(chatMemoryProvider.notifier);
+
+    // 送信するメッセージを作成
+    final messageModel = OpenAIChatCompletionChoiceMessageModel(
+      role: OpenAIChatMessageRole.user,
+      content: ref.read(chatControllerProvider).text,
+    );
+
+    // チャット内容を入力するTextFieldを空にする
+    ref.read(chatControllerProvider.notifier).state.text = "";
+
+    // チャットメモリに送信するメッセージを追加
+    chatMemoryState.state = [...chatMemoryState.state, messageModel];
+
+    try {
+      // Chat GPT APIに送ってレスポンスを取得
+      OpenAIChatCompletionModel chatResponse =
+          await OpenAI.instance.chat.create(
+        model: "gpt-3.5-turbo",
+        messages: chatMemoryState.state,
+      );
+
+      // チャットメモリに返ってきたメッセージを追加
+      chatMemoryState.state = [
+        ...chatMemoryState.state,
+        chatResponse.choices[0].message
+      ];
+    } catch (e) {
+      // エラーが発生した場合はエラーメッセージををチャットメモリに追加する
+      chatMemoryState.state = [
+        ...chatMemoryState.state,
+        OpenAIChatCompletionChoiceMessageModel(
+          role: OpenAIChatMessageRole.assistant,
+          content: "エラーが発生しました\n${e.toString()}",
+        )
+      ];
+    }
   }
 
   @override
@@ -114,60 +158,36 @@ class MyHomePage extends ConsumerWidget with WidgetsBindingObserver {
                         Expanded(
                           child: RawKeyboardListener(
                             focusNode: FocusNode(),
-                            onKey: (value) {
+                            onKey: (value) async {
                               if (value
-                                  .isKeyPressed(LogicalKeyboardKey.enter)) {
-                                print("Enter!!!");
+                                      .isKeyPressed(LogicalKeyboardKey.enter) &&
+                                  !value.isShiftPressed) {
+                                isEnter = true;
+                                await postChat(ref);
                               }
                             },
                             child: TextField(
-                              minLines: 1,
-                              maxLines: 2,
-                              decoration: const InputDecoration(
-                                hintText: "チャットをここに入力",
-                              ),
-                              controller: ref.watch(chatControllerProvider),
-                            ),
+                                minLines: 1,
+                                maxLines: 2,
+                                decoration: const InputDecoration(
+                                  hintText: "チャットをここに入力",
+                                ),
+                                controller: ref.watch(chatControllerProvider),
+                                onChanged: (value) {
+                                  if (isEnter) {
+                                    ref
+                                        .read(chatControllerProvider.notifier)
+                                        .state
+                                        .text = "";
+                                    isEnter = false;
+                                  }
+                                }),
                           ),
                         ),
                         const SizedBox(width: 8),
                         IconButton(
                           onPressed: () async {
-                            final messageModel =
-                                OpenAIChatCompletionChoiceMessageModel(
-                              role: OpenAIChatMessageRole.user,
-                              content: ref.read(chatControllerProvider).text,
-                            );
-
-                            ref
-                                .read(chatControllerProvider.notifier)
-                                .state
-                                .text = "";
-
-                            chatMemoryState.state = [
-                              ...chatMemoryState.state,
-                              messageModel
-                            ];
-
-                            try {
-                              OpenAIChatCompletionModel chatResponse =
-                                  await OpenAI.instance.chat.create(
-                                model: "gpt-3.5-turbo",
-                                messages: chatMemoryState.state,
-                              );
-                              chatMemoryState.state = [
-                                ...chatMemoryState.state,
-                                chatResponse.choices[0].message
-                              ];
-                            } catch (e) {
-                              chatMemoryState.state = [
-                                ...chatMemoryState.state,
-                                OpenAIChatCompletionChoiceMessageModel(
-                                  role: OpenAIChatMessageRole.assistant,
-                                  content: "エラーが発生しました\n${e.toString()}",
-                                )
-                              ];
-                            }
+                            await postChat(ref);
                           },
                           icon: const Icon(Icons.send),
                         )
