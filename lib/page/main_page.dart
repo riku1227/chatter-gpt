@@ -1,15 +1,10 @@
-import 'dart:convert';
-
 import 'package:chatter_gpt/components/widget/chat_card.dart';
 import 'package:chatter_gpt/l10n/l10n.dart';
-import 'package:chatter_gpt/model/secret_box_model.dart';
 import 'package:chatter_gpt/repository/preference_repository.dart';
-import 'package:cryptography/cryptography.dart';
 import 'package:dart_openai/openai.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../components/dialog/api_key_input_dialog.dart';
 import '../provider/api_key_provider.dart';
@@ -87,36 +82,34 @@ class MyHomePage extends ConsumerWidget with WidgetsBindingObserver {
         messages: chatMemoryState.state,
       );
 
-      // チャットメモリに返ってきたメッセージを追加
-      /* chatMemoryState.state = [
-        ...chatMemoryState.state,
-        chatResponse.choices[0].message
-      ]; */
-
-      var isFirst = true;
+      var currentMessage = "";
       chatStream.listen((chatResponse) {
-        if (isFirst) {
-          chatMemoryState.state = [
-            ...chatMemoryState.state,
-            OpenAIChatCompletionChoiceMessageModel(
-              role: OpenAIChatMessageRole.user,
-              content: "",
-            )
-          ];
-          isFirst = false;
-        }
         final appendMessage = chatResponse.choices[0].delta.content;
         if (appendMessage == null) {
           return;
         }
-        var currentMessage =
-            chatMemoryState.state[chatMemoryState.state.length - 1].content;
+        // まだメッセージが追加されていない状態の時はチャットメモリにメッセージモデルを追加する
+        if (currentMessage.isEmpty) {
+          chatMemoryState.state = [
+            ...chatMemoryState.state,
+            OpenAIChatCompletionChoiceMessageModel(
+              role: OpenAIChatMessageRole.assistant,
+              content: "",
+            )
+          ];
+        }
+
+        // 新しく受け取ったメッセージを追加する
+        currentMessage += appendMessage;
+
+        /// 配列は配列ごと入れ替えないといけないので
+        /// 更新中の最後の要素を一度削除して、新規で受け取った分を追加したメッセージモデルを作成しなおす
         chatMemoryState.state = [
           ...chatMemoryState.state.sublist(0, chatMemoryState.state.length - 1),
           OpenAIChatCompletionChoiceMessageModel(
             role: OpenAIChatMessageRole.assistant,
-            content: currentMessage + appendMessage,
-          )
+            content: currentMessage,
+          ),
         ];
       });
     } catch (e) {
@@ -138,102 +131,102 @@ class MyHomePage extends ConsumerWidget with WidgetsBindingObserver {
     final chatMemoryState = ref.watch(chatMemoryProvider.notifier);
 
     return Scaffold(
-        appBar: AppBar(
-          title: const Text("Chatter GPT"),
-        ),
-        body: FutureBuilder(
-            future: getAPIKey(context, ref),
-            builder: (context, snapshot) {
-              if (snapshot.data == null) {
-                return Text(l10n.loading_message);
-              }
+      appBar: AppBar(
+        title: const Text("Chatter GPT"),
+      ),
+      body: FutureBuilder(
+        future: getAPIKey(context, ref),
+        builder: (context, snapshot) {
+          if (snapshot.data == null) {
+            return Text(l10n.loading_message);
+          }
 
-              return Column(
-                children: [
-                  Expanded(
-                    flex: 9,
-                    child: ListView.builder(
-                        itemCount: chatMemory.length,
-                        itemBuilder: (context, index) {
-                          final chat = chatMemory[index];
+          return Column(
+            children: [
+              Expanded(
+                flex: 9,
+                child: ListView.builder(
+                    itemCount: chatMemory.length,
+                    itemBuilder: (context, index) {
+                      final chat = chatMemory[index];
 
-                          var chatWidget = [
-                            Flexible(
-                              flex: 1,
-                              child: ChatCard(
-                                content: chat.content,
-                              ),
-                            ),
-                            const Expanded(flex: 1, child: SizedBox()),
-                          ];
-
-                          // ロールがユーザーだったら右側に表示するので配列を反転させる
-                          if (chat.role == OpenAIChatMessageRole.user) {
-                            chatWidget = chatWidget.reversed.toList();
-                          }
-
-                          return Row(
-                            children: chatWidget,
-                          );
-                        }),
-                  ),
-                  SizedBox(
-                    height: 60,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        IconButton(
-                          tooltip: l10n.main_chat_clear_memory,
-                          onPressed: () {
-                            chatMemoryState.state = [];
-                          },
-                          icon: const Icon(Icons.clear),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: RawKeyboardListener(
-                            focusNode: FocusNode(),
-                            onKey: (value) async {
-                              if (value
-                                      .isKeyPressed(LogicalKeyboardKey.enter) &&
-                                  !value.isShiftPressed) {
-                                isEnter = true;
-                                await postChat(ref,
-                                    errorMessage: l10n.error_message);
-                              }
-                            },
-                            child: TextField(
-                                minLines: 1,
-                                maxLines: 2,
-                                decoration: InputDecoration(
-                                  hintText: l10n.main_chat_input_textfield,
-                                ),
-                                controller: ref.watch(chatControllerProvider),
-                                onChanged: (value) {
-                                  if (isEnter) {
-                                    ref
-                                        .read(chatControllerProvider.notifier)
-                                        .state
-                                        .text = "";
-                                    isEnter = false;
-                                  }
-                                }),
+                      var chatWidget = [
+                        Flexible(
+                          flex: 1,
+                          child: ChatCard(
+                            content: chat.content,
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        IconButton(
-                          onPressed: () async {
+                        const Expanded(flex: 1, child: SizedBox()),
+                      ];
+
+                      // ロールがユーザーだったら右側に表示するので配列を反転させる
+                      if (chat.role == OpenAIChatMessageRole.user) {
+                        chatWidget = chatWidget.reversed.toList();
+                      }
+
+                      return Row(
+                        children: chatWidget,
+                      );
+                    }),
+              ),
+              SizedBox(
+                height: 60,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      tooltip: l10n.main_chat_clear_memory,
+                      onPressed: () {
+                        chatMemoryState.state = [];
+                      },
+                      icon: const Icon(Icons.clear),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: RawKeyboardListener(
+                        focusNode: FocusNode(),
+                        onKey: (value) async {
+                          if (value.isKeyPressed(LogicalKeyboardKey.enter) &&
+                              !value.isShiftPressed) {
+                            isEnter = true;
                             await postChat(ref,
                                 errorMessage: l10n.error_message);
-                          },
-                          tooltip: l10n.main_chat_send,
-                          icon: const Icon(Icons.send),
-                        )
-                      ],
+                          }
+                        },
+                        child: TextField(
+                            minLines: 1,
+                            maxLines: 2,
+                            decoration: InputDecoration(
+                              hintText: l10n.main_chat_input_textfield,
+                            ),
+                            controller: ref.watch(chatControllerProvider),
+                            onChanged: (value) {
+                              if (isEnter) {
+                                ref
+                                    .read(chatControllerProvider.notifier)
+                                    .state
+                                    .text = "";
+                                isEnter = false;
+                              }
+                            }),
+                      ),
                     ),
-                  ),
-                ],
-              );
-            }));
+                    const SizedBox(width: 8),
+                    IconButton(
+                      onPressed: () async {
+                        await postChat(ref, errorMessage: l10n.error_message);
+                      },
+                      tooltip: l10n.main_chat_send,
+                      icon: const Icon(Icons.send),
+                    )
+                  ],
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
   }
 }
