@@ -1,9 +1,8 @@
+import 'package:chatter_gpt/components/widget/chat_card.dart';
 import 'package:dart_openai/openai.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:markdown_widget/config/configs.dart';
-import 'package:markdown_widget/widget/markdown.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../components/dialog/api_key_input_dialog.dart';
@@ -17,7 +16,7 @@ final chatControllerProvider = StateProvider(
 final chatMemoryProvider =
     StateProvider<List<OpenAIChatCompletionChoiceMessageModel>>((ref) => []);
 
-class MyHomePage extends ConsumerWidget {
+class MyHomePage extends ConsumerWidget with WidgetsBindingObserver {
   const MyHomePage({Key? key}) : super(key: key);
 
   /// APIキーを取得してセットする
@@ -78,27 +77,25 @@ class MyHomePage extends ConsumerWidget {
                     child: ListView.builder(
                         itemCount: chatMemory.length,
                         itemBuilder: (context, index) {
-                          return Row(
-                            mainAxisAlignment: chatMemory[index].role ==
-                                    OpenAIChatMessageRole.user
-                                ? MainAxisAlignment.end
-                                : MainAxisAlignment.start,
-                            children: [
-                              Card(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8),
-                                  child: LimitedBox(
-                                      maxWidth:
-                                          MediaQuery.of(context).size.width *
-                                              0.5,
-                                      child: MarkdownWidget(
-                                        shrinkWrap: true,
-                                        data: chatMemory[index].content,
-                                        config: MarkdownConfig.darkConfig,
-                                      )),
-                                ),
+                          final chat = chatMemory[index];
+
+                          var chatWidget = [
+                            Flexible(
+                              flex: 1,
+                              child: ChatCard(
+                                content: chat.content,
                               ),
-                            ],
+                            ),
+                            const Expanded(flex: 1, child: SizedBox()),
+                          ];
+
+                          // ロールがユーザーだったら右側に表示するので配列を反転させる
+                          if (chat.role == OpenAIChatMessageRole.user) {
+                            chatWidget = chatWidget.reversed.toList();
+                          }
+
+                          return Row(
+                            children: chatWidget,
                           );
                         }),
                   ),
