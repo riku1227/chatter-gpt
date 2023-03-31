@@ -75,7 +75,9 @@ class MyHomePage extends ConsumerWidget with WidgetsBindingObserver {
           ),
           drawer: constraints.maxWidth < 600
               ? const Drawer(
-                  child: DrawerList(),
+                  child: DrawerList(
+                    isHeader: true,
+                  ),
                 )
               : null,
         );
