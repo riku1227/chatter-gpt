@@ -141,7 +141,9 @@ class ChatScreen extends ConsumerWidget {
                     if (value.isKeyPressed(LogicalKeyboardKey.enter) &&
                         !value.isShiftPressed) {
                       isEnter = true;
-                      await postChat(ref, errorMessage: l10n.error_message);
+                      if (ref.watch(chatControllerProvider).text.isNotEmpty) {
+                        await postChat(ref, errorMessage: l10n.error_message);
+                      }
                     }
                   },
                   child: TextField(
