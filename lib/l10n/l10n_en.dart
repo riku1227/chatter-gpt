@@ -14,6 +14,9 @@ class L10nEn extends L10n {
   String get settings_title => 'Settings';
 
   @override
+  String get settings_change_api_key => 'Change API key';
+
+  @override
   String get drawer_tile_settings => 'Settings';
 
   @override

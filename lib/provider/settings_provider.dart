@@ -14,6 +14,7 @@ class SettingsNotifer extends StateNotifier<SettingsModel> {
   /// 設定を読み込む
   Future<void> loadSettings() async {
     final apiKey = await PreferenceRepository.getOpenAIAPIKey();
+    print(apiKey);
 
     _isLoaded = true;
     state = state.copyWith(

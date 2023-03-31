@@ -111,6 +111,12 @@ abstract class L10n {
   /// **'Settings'**
   String get settings_title;
 
+  /// No description provided for @settings_change_api_key.
+  ///
+  /// In en, this message translates to:
+  /// **'Change API key'**
+  String get settings_change_api_key;
+
   /// No description provided for @drawer_tile_settings.
   ///
   /// In en, this message translates to:

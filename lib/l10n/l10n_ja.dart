@@ -14,6 +14,9 @@ class L10nJa extends L10n {
   String get settings_title => '設定';
 
   @override
+  String get settings_change_api_key => 'APIキーを変更する';
+
+  @override
   String get drawer_tile_settings => '設定';
 
   @override

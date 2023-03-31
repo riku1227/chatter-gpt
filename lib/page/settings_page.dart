@@ -1,6 +1,8 @@
+import 'package:chatter_gpt/provider/settings_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../components/dialog/api_key_input_dialog.dart';
 import '../l10n/l10n.dart';
 
 class SettingsPage extends ConsumerWidget {
@@ -17,16 +19,27 @@ class SettingsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final settingsState = ref.watch(settingsProvider.notifier);
     //設定
     final l10n = L10n.of(context)!;
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.settings_title),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-        ),
+      body: ListView(
+        children: [
+          ListTile(
+            leading: const Icon(Icons.vpn_key),
+            title: Text(l10n.settings_change_api_key),
+            onTap: () async {
+              final response = await showDialog<String?>(
+                  context: context, builder: (_) => ApiKeyInputDialog());
+              if (response != null) {
+                await settingsState.setAPIKey(response);
+              }
+            },
+          )
+        ],
       ),
     );
   }

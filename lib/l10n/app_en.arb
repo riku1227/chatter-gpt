@@ -4,6 +4,7 @@
     "main_chat_input_textfield": "Chat here.",
     "main_chat_clear_memory": "Clear chat history/memory",
     "settings_title": "Settings",
+    "settings_change_api_key": "Change API key",
     "drawer_tile_settings": "Settings",
     "dialog_api_key_title": "API Key",
     "dialog_api_key_textfield": "Enter your Open AI API key",
