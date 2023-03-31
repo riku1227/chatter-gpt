@@ -1,11 +1,11 @@
 import 'package:chatter_gpt/components/chat_screen.dart';
 import 'package:chatter_gpt/components/drawer_list.dart';
-import 'package:chatter_gpt/repository/preference_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../components/dialog/api_key_input_dialog.dart';
-import '../provider/api_key_provider.dart';
+
+import '../provider/settings_provider.dart';
 
 class MyHomePage extends ConsumerWidget with WidgetsBindingObserver {
   MyHomePage({Key? key}) : super(key: key);
@@ -13,18 +13,14 @@ class MyHomePage extends ConsumerWidget with WidgetsBindingObserver {
   /// APIキーを取得してセットする
   getAPIKey(BuildContext context, WidgetRef ref) async {
     /// APIキーのStateを取得
-    final apiKeyState = ref.read(apiKeyProvider.notifier);
-
-    /// APIキーのStateにAPIキーが既にセットされてたら処理を終了する
-    if (apiKeyState.getAPIKey().isNotEmpty) {
-      return true;
+    final settingsState = ref.read(settingsProvider.notifier);
+    if (!settingsState.isLoaded) {
+      /// 設定がまだ読み込まれていない場合は設定を読み込ませる
+      await settingsState.loadSettings();
     }
 
-    String? apiKey = await PreferenceRepository.getOpenAIAPIKey();
-
-    /// PreferencesにAPIキーが存在したらAPIキーをセットして処理を終了する
-    if (apiKey != null) {
-      apiKeyState.setAPIKey(apiKey);
+    /// APIキーのStateにAPIキーが既にセットされてたら処理を終了する
+    if (settingsState.getAPIKey().isNotEmpty) {
       return true;
     }
 
@@ -38,8 +34,7 @@ class MyHomePage extends ConsumerWidget with WidgetsBindingObserver {
 
       /// 結果がnull以外だったらAPIキーをセットする
       if (result != null) {
-        apiKeyState.setAPIKey(result);
-        await PreferenceRepository.setOpenAIAPIKey(result);
+        await settingsState.setAPIKey(result);
       }
     }
     return true;

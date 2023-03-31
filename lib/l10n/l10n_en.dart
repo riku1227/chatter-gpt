@@ -11,6 +11,12 @@ class L10nEn extends L10n {
   String get main_chat_clear_memory => 'Clear chat history/memory';
 
   @override
+  String get settings_title => 'Settings';
+
+  @override
+  String get drawer_tile_settings => 'Settings';
+
+  @override
   String get dialog_api_key_title => 'API Key';
 
   @override

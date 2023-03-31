@@ -105,6 +105,18 @@ abstract class L10n {
   /// **'Clear chat history/memory'**
   String get main_chat_clear_memory;
 
+  /// No description provided for @settings_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settings_title;
+
+  /// No description provided for @drawer_tile_settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get drawer_tile_settings;
+
   /// No description provided for @dialog_api_key_title.
   ///
   /// In en, this message translates to:

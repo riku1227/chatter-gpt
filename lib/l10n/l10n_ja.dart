@@ -11,6 +11,12 @@ class L10nJa extends L10n {
   String get main_chat_clear_memory => 'チャット履歴/記憶を削除する';
 
   @override
+  String get settings_title => '設定';
+
+  @override
+  String get drawer_tile_settings => '設定';
+
+  @override
   String get dialog_api_key_title => 'APIキー';
 
   @override

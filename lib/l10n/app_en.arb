@@ -3,6 +3,8 @@
     "@@TRANSLATE BY": "CHAT GPT",
     "main_chat_input_textfield": "Chat here.",
     "main_chat_clear_memory": "Clear chat history/memory",
+    "settings_title": "Settings",
+    "drawer_tile_settings": "Settings",
     "dialog_api_key_title": "API Key",
     "dialog_api_key_textfield": "Enter your Open AI API key",
     "dialog_api_key_textfield_error": "The entered value is not an API key",
