@@ -1,3 +1,4 @@
+import 'package:chatter_gpt/model/chat_memory_model.dart';
 import 'package:dart_openai/openai.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,7 +13,8 @@ final chatControllerProvider = StateProvider(
 
 /// チャットメモリのプロバイダー
 final chatMemoryProvider =
-    StateProvider<List<OpenAIChatCompletionChoiceMessageModel>>((ref) => []);
+    StateNotifierProvider<ChatMemoryModelNotifer, ChatMemoryModel>(
+        (ref) => ChatMemoryModelNotifer());
 
 class ChatScreen extends ConsumerWidget {
   ChatScreen({Key? key}) : super(key: key);
@@ -34,62 +36,52 @@ class ChatScreen extends ConsumerWidget {
     ref.read(chatControllerProvider.notifier).state.text = "";
 
     // チャットメモリに送信するメッセージを追加
-    chatMemoryState.state = [...chatMemoryState.state, messageModel];
+    chatMemoryState.addMemory(messageModel);
 
     try {
       // Chat GPT APIに送ってレスポンスを取得
       Stream<OpenAIStreamChatCompletionModel> chatStream =
           OpenAI.instance.chat.createStream(
         model: "gpt-3.5-turbo",
-        messages: chatMemoryState.state,
+        messages: chatMemoryState.chatMemory,
       );
-
-      var currentMessage = "";
+      var isFirst = true;
       chatStream.listen((chatResponse) {
         final appendMessage = chatResponse.choices[0].delta.content;
         if (appendMessage == null) {
           return;
         }
         // まだメッセージが追加されていない状態の時はチャットメモリにメッセージモデルを追加する
-        if (currentMessage.isEmpty) {
-          chatMemoryState.state = [
-            ...chatMemoryState.state,
+        if (isFirst) {
+          chatMemoryState.addMemory(
             OpenAIChatCompletionChoiceMessageModel(
               role: OpenAIChatMessageRole.assistant,
               content: "",
-            )
-          ];
+            ),
+          );
+          isFirst = false;
         }
 
-        // 新しく受け取ったメッセージを追加する
-        currentMessage += appendMessage;
+        chatMemoryState.appendLatestMemoryContent(appendMessage);
 
         /// 配列は配列ごと入れ替えないといけないので
         /// 更新中の最後の要素を一度削除して、新規で受け取った分を追加したメッセージモデルを作成しなおす
-        chatMemoryState.state = [
-          ...chatMemoryState.state.sublist(0, chatMemoryState.state.length - 1),
-          OpenAIChatCompletionChoiceMessageModel(
-            role: OpenAIChatMessageRole.assistant,
-            content: currentMessage,
-          ),
-        ];
       });
     } catch (e) {
       // エラーが発生した場合はエラーメッセージををチャットメモリに追加する
-      chatMemoryState.state = [
-        ...chatMemoryState.state,
+      chatMemoryState.addMemory(
         OpenAIChatCompletionChoiceMessageModel(
           role: OpenAIChatMessageRole.assistant,
           content: "$errorMessage\n${e.toString()}",
-        )
-      ];
+        ),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = L10n.of(context)!;
-    final chatMemory = ref.watch(chatMemoryProvider);
+    final chatMemory = ref.watch(chatMemoryProvider).chatMemory;
     final chatMemoryState = ref.watch(chatMemoryProvider.notifier);
 
     return Column(
@@ -129,7 +121,7 @@ class ChatScreen extends ConsumerWidget {
               IconButton(
                 tooltip: l10n.main_chat_clear_memory,
                 onPressed: () {
-                  chatMemoryState.state = [];
+                  chatMemoryState.clearMemory();
                 },
                 icon: const Icon(Icons.clear),
               ),
