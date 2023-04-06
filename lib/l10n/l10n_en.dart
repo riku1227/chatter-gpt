@@ -20,6 +20,9 @@ class L10nEn extends L10n {
   String get drawer_tile_settings => 'Settings';
 
   @override
+  String get drawer_tile_add_chat_session => 'Add session';
+
+  @override
   String get dialog_api_key_title => 'API Key';
 
   @override
@@ -29,6 +32,17 @@ class L10nEn extends L10n {
   String get dialog_api_key_textfield_error => 'The entered value is not an API key';
 
   @override
+  String get dialog_delete_chat_session_title => 'Delete session';
+
+  @override
+  String dialog_delete_chat_session_message(Object session) {
+    return 'Do you want to delete $session?';
+  }
+
+  @override
+  String get dialog_delete_chat_session_ok => 'Delete';
+
+  @override
   String get main_chat_send => 'Send chat';
 
   @override
@@ -36,4 +50,7 @@ class L10nEn extends L10n {
 
   @override
   String get loading_message => 'Loading...';
+
+  @override
+  String get message_cancel => 'キャンセル';
 }

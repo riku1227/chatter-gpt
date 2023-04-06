@@ -6,10 +6,15 @@
     "settings_title": "Settings",
     "settings_change_api_key": "Change API key",
     "drawer_tile_settings": "Settings",
+    "drawer_tile_add_chat_session": "Add session",
     "dialog_api_key_title": "API Key",
     "dialog_api_key_textfield": "Enter your Open AI API key",
     "dialog_api_key_textfield_error": "The entered value is not an API key",
+    "dialog_delete_chat_session_title": "Delete session",
+    "dialog_delete_chat_session_message": "Do you want to delete {session}?",
+    "dialog_delete_chat_session_ok": "Delete",
     "main_chat_send": "Send chat",
     "error_message": "An error has occurred",
-    "loading_message": "Loading..."
+    "loading_message": "Loading...",
+    "message_cancel": "キャンセル"
 }

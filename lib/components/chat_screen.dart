@@ -11,13 +11,11 @@ import 'widget/chat_card.dart';
 final chatControllerProvider = StateProvider(
     name: "chatControllerProvider", (ref) => TextEditingController());
 
-/// チャットメモリのプロバイダー
-final chatMemoryProvider =
-    StateNotifierProvider<ChatMemoryModelNotifer, ChatMemoryModel>(
-        (ref) => ChatMemoryModelNotifer());
-
 class ChatScreen extends ConsumerWidget {
-  ChatScreen({Key? key}) : super(key: key);
+  final StateNotifierProvider<ChatMemoryModelNotifer, ChatMemoryModel>
+      chatMemoryProvider;
+
+  ChatScreen({Key? key, required this.chatMemoryProvider}) : super(key: key);
 
   var isEnter = false;
 

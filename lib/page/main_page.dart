@@ -1,11 +1,14 @@
 import 'package:chatter_gpt/components/chat_screen.dart';
 import 'package:chatter_gpt/components/drawer_list.dart';
+import 'package:chatter_gpt/provider/chat_memory_list_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../components/dialog/api_key_input_dialog.dart';
 
 import '../provider/settings_provider.dart';
+
+final currentMemoryIndexProvider = StateProvider<int>((ref) => 0);
 
 class MyHomePage extends ConsumerWidget with WidgetsBindingObserver {
   MyHomePage({Key? key}) : super(key: key);
@@ -42,6 +45,10 @@ class MyHomePage extends ConsumerWidget with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final chatMemoryListNotifier =
+        ref.watch(chatMemoryListNotiferProvider.notifier);
+    final currentMemoryIndex = ref.watch(currentMemoryIndexProvider);
+
     return LayoutBuilder(
       builder: (context, constraints) {
         // 画面幅によって表示するウィジェットを変更するため、リストを作成する。
@@ -67,7 +74,10 @@ class MyHomePage extends ConsumerWidget with WidgetsBindingObserver {
                 children: [
                   ...rowChildList,
                   Expanded(
-                    child: ChatScreen(),
+                    child: ChatScreen(
+                      chatMemoryProvider: chatMemoryListNotifier
+                          .getChatMemoryAtIndex(currentMemoryIndex),
+                    ),
                   ),
                 ],
               );

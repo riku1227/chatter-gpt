@@ -123,6 +123,12 @@ abstract class L10n {
   /// **'Settings'**
   String get drawer_tile_settings;
 
+  /// No description provided for @drawer_tile_add_chat_session.
+  ///
+  /// In en, this message translates to:
+  /// **'Add session'**
+  String get drawer_tile_add_chat_session;
+
   /// No description provided for @dialog_api_key_title.
   ///
   /// In en, this message translates to:
@@ -141,6 +147,24 @@ abstract class L10n {
   /// **'The entered value is not an API key'**
   String get dialog_api_key_textfield_error;
 
+  /// No description provided for @dialog_delete_chat_session_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete session'**
+  String get dialog_delete_chat_session_title;
+
+  /// No description provided for @dialog_delete_chat_session_message.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to delete {session}?'**
+  String dialog_delete_chat_session_message(Object session);
+
+  /// No description provided for @dialog_delete_chat_session_ok.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get dialog_delete_chat_session_ok;
+
   /// No description provided for @main_chat_send.
   ///
   /// In en, this message translates to:
@@ -158,6 +182,12 @@ abstract class L10n {
   /// In en, this message translates to:
   /// **'Loading...'**
   String get loading_message;
+
+  /// No description provided for @message_cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'キャンセル'**
+  String get message_cancel;
 }
 
 class _L10nDelegate extends LocalizationsDelegate<L10n> {
