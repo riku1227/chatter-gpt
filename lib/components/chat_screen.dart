@@ -112,7 +112,7 @@ class ChatScreen extends ConsumerWidget {
               }),
         ),
         SizedBox(
-          height: 60,
+          height: 80,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -138,7 +138,7 @@ class ChatScreen extends ConsumerWidget {
                   },
                   child: TextField(
                       minLines: 1,
-                      maxLines: 2,
+                      maxLines: 3,
                       decoration: InputDecoration(
                         hintText: l10n.main_chat_input_textfield,
                       ),
