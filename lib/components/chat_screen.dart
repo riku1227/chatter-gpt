@@ -61,9 +61,6 @@ class ChatScreen extends ConsumerWidget {
         }
 
         chatMemoryState.appendLatestMemoryContent(appendMessage);
-
-        /// 配列は配列ごと入れ替えないといけないので
-        /// 更新中の最後の要素を一度削除して、新規で受け取った分を追加したメッセージモデルを作成しなおす
       });
     } catch (e) {
       // エラーが発生した場合はエラーメッセージををチャットメモリに追加する
