@@ -60,8 +60,10 @@ class DrawerList extends ConsumerWidget {
           shrinkWrap: true,
           itemCount: chatMemoryListProvider.length,
           itemBuilder: (context, index) {
+            final chatMemory = ref.watch(chatMemoryListProvider[index]);
+            final memoryName = chatMemory.memoryName ?? "Session: $index";
             return ListTile(
-              title: Text("Session: $index"),
+              title: Text(memoryName),
               onTap: () {
                 ref.read(currentMemoryIndexProvider.notifier).state = index;
               },
@@ -71,8 +73,8 @@ class DrawerList extends ConsumerWidget {
                     builder: (context) {
                       return AlertDialog(
                         title: Text(l10n.dialog_delete_chat_session_title),
-                        content: Text(l10n.dialog_delete_chat_session_message(
-                            "Session: $index")),
+                        content: Text(l10n
+                            .dialog_delete_chat_session_message(memoryName)),
                         actions: [
                           TextButton(
                             child: Text(l10n.message_cancel),

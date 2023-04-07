@@ -43,6 +43,15 @@ class L10nEn extends L10n {
   String get dialog_delete_chat_session_ok => 'Delete';
 
   @override
+  String get dialog_change_session_name_title => 'Change Session Name';
+
+  @override
+  String get dialog_change_session_name_textfield => 'Session Name';
+
+  @override
+  String get dialog_change_session_name_ok => 'Change';
+
+  @override
   String get main_chat_send => 'Send chat';
 
   @override

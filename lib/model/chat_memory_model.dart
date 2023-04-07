@@ -26,6 +26,9 @@ class OpenAIChatCompletionChoiceMessageModelConverter
 @freezed
 class ChatMemoryModel with _$ChatMemoryModel {
   factory ChatMemoryModel({
+    /// チャットメモリの名前
+    String? memoryName,
+
     /// Systemメッセージとして一番最初に送信されるメッセージ (プロンプト)
     required String prefixPrompt,
 
@@ -77,4 +80,12 @@ class ChatMemoryModelNotifer extends StateNotifier<ChatMemoryModel> {
   /// チャット履歴を取得
   List<OpenAIChatCompletionChoiceMessageModel> get chatMemory =>
       state.chatMemory;
+
+  /// チャットメモリの名前をセット
+  void setMemoryName(String memoryName) {
+    state = state.copyWith(memoryName: memoryName);
+  }
+
+  /// チャットメモリの名前を取得
+  String? get memoryName => state.memoryName;
 }

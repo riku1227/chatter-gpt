@@ -13,6 +13,9 @@
     "dialog_delete_chat_session_title": "セッションを削除",
     "dialog_delete_chat_session_message": "{session} を削除しますか？",
     "dialog_delete_chat_session_ok": "削除する",
+    "dialog_change_session_name_title": "セッション名の変更",
+    "dialog_change_session_name_textfield": "セッション名",
+    "dialog_change_session_name_ok": "変更する",
     "error_message": "エラーが発生しました",
     "loading_message": "読み込み中...",
     "message_cancel": "キャンセル"

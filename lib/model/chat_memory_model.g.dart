@@ -8,6 +8,7 @@ part of 'chat_memory_model.dart';
 
 _$_ChatMemoryModel _$$_ChatMemoryModelFromJson(Map<String, dynamic> json) =>
     _$_ChatMemoryModel(
+      memoryName: json['memoryName'] as String?,
       prefixPrompt: json['prefixPrompt'] as String,
       chatMemory: (json['chatMemory'] as List<dynamic>?)
               ?.map((e) =>
@@ -19,6 +20,7 @@ _$_ChatMemoryModel _$$_ChatMemoryModelFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$$_ChatMemoryModelToJson(_$_ChatMemoryModel instance) =>
     <String, dynamic>{
+      'memoryName': instance.memoryName,
       'prefixPrompt': instance.prefixPrompt,
       'chatMemory': instance.chatMemory
           .map(const OpenAIChatCompletionChoiceMessageModelConverter().toJson)

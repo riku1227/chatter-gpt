@@ -1,5 +1,7 @@
 import 'package:chatter_gpt/components/chat_screen.dart';
+import 'package:chatter_gpt/components/dialog/text_input_dialog.dart';
 import 'package:chatter_gpt/components/drawer_list.dart';
+import 'package:chatter_gpt/l10n/l10n.dart';
 import 'package:chatter_gpt/provider/chat_memory_list_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -45,9 +47,21 @@ class MyHomePage extends ConsumerWidget with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = L10n.of(context)!;
+
+    //メモリリストを取得する
     final chatMemoryListNotifier =
         ref.watch(chatMemoryListNotiferProvider.notifier);
+
+    //現在選択されているメモリのインデックスを取得
     final currentMemoryIndex = ref.watch(currentMemoryIndexProvider);
+
+    //メモリリストから現在選択されているメモリを取得
+    final currentChatMemory = ref
+        .watch(chatMemoryListNotifier.getChatMemoryAtIndex(currentMemoryIndex));
+    final currentChatMemoryState = ref.watch(chatMemoryListNotifier
+        .getChatMemoryAtIndex(currentMemoryIndex)
+        .notifier);
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -61,7 +75,29 @@ class MyHomePage extends ConsumerWidget with WidgetsBindingObserver {
         }
         return Scaffold(
           appBar: AppBar(
-            title: const Text("Chatter GPT"),
+            title: Text(
+                "Chatter GPT - ${currentChatMemory.memoryName ?? 'Session: $currentMemoryIndex'}"),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.edit),
+                onPressed: () async {
+                  // セッションの名前を変更するダイアログを表示する
+                  final String? result = await showDialog(
+                    context: context,
+                    builder: (context) => TextInputDialog(
+                      title: l10n.dialog_change_session_name_title,
+                      textFieldHint: l10n.dialog_change_session_name_textfield,
+                      positiveButtonText: l10n.dialog_change_session_name_ok,
+                      negativeButtonText: l10n.message_cancel,
+                      defaultValue: currentChatMemory.memoryName,
+                    ),
+                  );
+                  if (result != null) {
+                    currentChatMemoryState.setMemoryName(result);
+                  }
+                },
+              )
+            ],
           ),
           body: FutureBuilder(
             future: getAPIKey(context, ref),

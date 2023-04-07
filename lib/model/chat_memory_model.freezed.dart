@@ -20,7 +20,13 @@ ChatMemoryModel _$ChatMemoryModelFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$ChatMemoryModel {
+  /// チャットメモリの名前
+  String? get memoryName => throw _privateConstructorUsedError;
+
+  /// Systemメッセージとして一番最初に送信されるメッセージ (プロンプト)
   String get prefixPrompt => throw _privateConstructorUsedError;
+
+  /// 過去のチャット履歴を保存するリスト
   @OpenAIChatCompletionChoiceMessageModelConverter()
   List<OpenAIChatCompletionChoiceMessageModel> get chatMemory =>
       throw _privateConstructorUsedError;
@@ -38,7 +44,8 @@ abstract class $ChatMemoryModelCopyWith<$Res> {
       _$ChatMemoryModelCopyWithImpl<$Res, ChatMemoryModel>;
   @useResult
   $Res call(
-      {String prefixPrompt,
+      {String? memoryName,
+      String prefixPrompt,
       @OpenAIChatCompletionChoiceMessageModelConverter()
           List<OpenAIChatCompletionChoiceMessageModel> chatMemory});
 }
@@ -56,10 +63,15 @@ class _$ChatMemoryModelCopyWithImpl<$Res, $Val extends ChatMemoryModel>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? memoryName = freezed,
     Object? prefixPrompt = null,
     Object? chatMemory = null,
   }) {
     return _then(_value.copyWith(
+      memoryName: freezed == memoryName
+          ? _value.memoryName
+          : memoryName // ignore: cast_nullable_to_non_nullable
+              as String?,
       prefixPrompt: null == prefixPrompt
           ? _value.prefixPrompt
           : prefixPrompt // ignore: cast_nullable_to_non_nullable
@@ -81,7 +93,8 @@ abstract class _$$_ChatMemoryModelCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String prefixPrompt,
+      {String? memoryName,
+      String prefixPrompt,
       @OpenAIChatCompletionChoiceMessageModelConverter()
           List<OpenAIChatCompletionChoiceMessageModel> chatMemory});
 }
@@ -97,10 +110,15 @@ class __$$_ChatMemoryModelCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? memoryName = freezed,
     Object? prefixPrompt = null,
     Object? chatMemory = null,
   }) {
     return _then(_$_ChatMemoryModel(
+      memoryName: freezed == memoryName
+          ? _value.memoryName
+          : memoryName // ignore: cast_nullable_to_non_nullable
+              as String?,
       prefixPrompt: null == prefixPrompt
           ? _value.prefixPrompt
           : prefixPrompt // ignore: cast_nullable_to_non_nullable
@@ -117,7 +135,8 @@ class __$$_ChatMemoryModelCopyWithImpl<$Res>
 @JsonSerializable()
 class _$_ChatMemoryModel implements _ChatMemoryModel {
   _$_ChatMemoryModel(
-      {required this.prefixPrompt,
+      {this.memoryName,
+      required this.prefixPrompt,
       @OpenAIChatCompletionChoiceMessageModelConverter()
           final List<OpenAIChatCompletionChoiceMessageModel>
               chatMemory = const []})
@@ -126,9 +145,18 @@ class _$_ChatMemoryModel implements _ChatMemoryModel {
   factory _$_ChatMemoryModel.fromJson(Map<String, dynamic> json) =>
       _$$_ChatMemoryModelFromJson(json);
 
+  /// チャットメモリの名前
+  @override
+  final String? memoryName;
+
+  /// Systemメッセージとして一番最初に送信されるメッセージ (プロンプト)
   @override
   final String prefixPrompt;
+
+  /// 過去のチャット履歴を保存するリスト
   final List<OpenAIChatCompletionChoiceMessageModel> _chatMemory;
+
+  /// 過去のチャット履歴を保存するリスト
   @override
   @JsonKey()
   @OpenAIChatCompletionChoiceMessageModelConverter()
@@ -140,7 +168,7 @@ class _$_ChatMemoryModel implements _ChatMemoryModel {
 
   @override
   String toString() {
-    return 'ChatMemoryModel(prefixPrompt: $prefixPrompt, chatMemory: $chatMemory)';
+    return 'ChatMemoryModel(memoryName: $memoryName, prefixPrompt: $prefixPrompt, chatMemory: $chatMemory)';
   }
 
   @override
@@ -148,6 +176,8 @@ class _$_ChatMemoryModel implements _ChatMemoryModel {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_ChatMemoryModel &&
+            (identical(other.memoryName, memoryName) ||
+                other.memoryName == memoryName) &&
             (identical(other.prefixPrompt, prefixPrompt) ||
                 other.prefixPrompt == prefixPrompt) &&
             const DeepCollectionEquality()
@@ -156,7 +186,7 @@ class _$_ChatMemoryModel implements _ChatMemoryModel {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, prefixPrompt,
+  int get hashCode => Object.hash(runtimeType, memoryName, prefixPrompt,
       const DeepCollectionEquality().hash(_chatMemory));
 
   @JsonKey(ignore: true)
@@ -175,7 +205,8 @@ class _$_ChatMemoryModel implements _ChatMemoryModel {
 
 abstract class _ChatMemoryModel implements ChatMemoryModel {
   factory _ChatMemoryModel(
-          {required final String prefixPrompt,
+          {final String? memoryName,
+          required final String prefixPrompt,
           @OpenAIChatCompletionChoiceMessageModelConverter()
               final List<OpenAIChatCompletionChoiceMessageModel> chatMemory}) =
       _$_ChatMemoryModel;
@@ -184,8 +215,16 @@ abstract class _ChatMemoryModel implements ChatMemoryModel {
       _$_ChatMemoryModel.fromJson;
 
   @override
+
+  /// チャットメモリの名前
+  String? get memoryName;
+  @override
+
+  /// Systemメッセージとして一番最初に送信されるメッセージ (プロンプト)
   String get prefixPrompt;
   @override
+
+  /// 過去のチャット履歴を保存するリスト
   @OpenAIChatCompletionChoiceMessageModelConverter()
   List<OpenAIChatCompletionChoiceMessageModel> get chatMemory;
   @override

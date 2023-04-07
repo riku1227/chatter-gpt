@@ -165,6 +165,24 @@ abstract class L10n {
   /// **'Delete'**
   String get dialog_delete_chat_session_ok;
 
+  /// No description provided for @dialog_change_session_name_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Session Name'**
+  String get dialog_change_session_name_title;
+
+  /// No description provided for @dialog_change_session_name_textfield.
+  ///
+  /// In en, this message translates to:
+  /// **'Session Name'**
+  String get dialog_change_session_name_textfield;
+
+  /// No description provided for @dialog_change_session_name_ok.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get dialog_change_session_name_ok;
+
   /// No description provided for @main_chat_send.
   ///
   /// In en, this message translates to:

@@ -43,6 +43,15 @@ class L10nJa extends L10n {
   String get dialog_delete_chat_session_ok => '削除する';
 
   @override
+  String get dialog_change_session_name_title => 'セッション名の変更';
+
+  @override
+  String get dialog_change_session_name_textfield => 'セッション名';
+
+  @override
+  String get dialog_change_session_name_ok => '変更する';
+
+  @override
   String get main_chat_send => 'チャットを送信する';
 
   @override
