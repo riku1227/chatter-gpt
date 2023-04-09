@@ -50,7 +50,8 @@ class DrawerList extends ConsumerWidget {
           leading: const Icon(Icons.add),
           title: Text(l10n.drawer_tile_add_chat_session),
           onTap: () {
-            chatMemoryListNotifier.addChatMemory(ChatMemoryModelNotifer());
+            chatMemoryListNotifier.addChatMemory(
+                ChatMemoryModelNotifer(ChatMemoryModel()), ref);
           },
         ),
 
@@ -85,8 +86,8 @@ class DrawerList extends ConsumerWidget {
                           TextButton(
                             child: Text(l10n.dialog_delete_chat_session_ok),
                             onPressed: () {
-                              chatMemoryListNotifier
-                                  .removeChatMemoryAtIndex(index);
+                              chatMemoryListNotifier.removeChatMemoryAtIndex(
+                                  index, ref);
                               ref
                                   .read(currentMemoryIndexProvider.notifier)
                                   .state = 0;

@@ -44,24 +44,29 @@ class ChatScreen extends ConsumerWidget {
         messages: chatMemoryState.chatMemory,
       );
       var isFirst = true;
-      chatStream.listen((chatResponse) {
-        final appendMessage = chatResponse.choices[0].delta.content;
-        if (appendMessage == null) {
-          return;
-        }
-        // まだメッセージが追加されていない状態の時はチャットメモリにメッセージモデルを追加する
-        if (isFirst) {
-          chatMemoryState.addMemory(
-            OpenAIChatCompletionChoiceMessageModel(
-              role: OpenAIChatMessageRole.assistant,
-              content: "",
-            ),
-          );
-          isFirst = false;
-        }
+      chatStream.listen(
+        (chatResponse) {
+          final appendMessage = chatResponse.choices[0].delta.content;
+          if (appendMessage == null) {
+            return;
+          }
+          // まだメッセージが追加されていない状態の時はチャットメモリにメッセージモデルを追加する
+          if (isFirst) {
+            chatMemoryState.addMemory(
+              OpenAIChatCompletionChoiceMessageModel(
+                role: OpenAIChatMessageRole.assistant,
+                content: "",
+              ),
+            );
+            isFirst = false;
+          }
 
-        chatMemoryState.appendLatestMemoryContent(appendMessage);
-      });
+          chatMemoryState.appendLatestMemoryContent(appendMessage);
+        },
+        onDone: () async {
+          await chatMemoryState.writeToFile();
+        },
+      );
     } catch (e) {
       // エラーが発生した場合はエラーメッセージををチャットメモリに追加する
       chatMemoryState.addMemory(

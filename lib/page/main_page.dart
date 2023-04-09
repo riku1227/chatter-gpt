@@ -15,6 +15,18 @@ final currentMemoryIndexProvider = StateProvider<int>((ref) => 0);
 class MyHomePage extends ConsumerWidget with WidgetsBindingObserver {
   MyHomePage({Key? key}) : super(key: key);
 
+  initSetup(BuildContext context, WidgetRef ref) async {
+    await getAPIKey(context, ref);
+    final memoryListNotiferProvider =
+        ref.read(chatMemoryListNotiferProvider.notifier);
+
+    if (!memoryListNotiferProvider.isLoaded) {
+      await memoryListNotiferProvider.loadChatMemoryList(ref);
+    }
+
+    return true;
+  }
+
   /// APIキーを取得してセットする
   getAPIKey(BuildContext context, WidgetRef ref) async {
     /// APIキーのStateを取得
@@ -49,20 +61,6 @@ class MyHomePage extends ConsumerWidget with WidgetsBindingObserver {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = L10n.of(context)!;
 
-    //メモリリストを取得する
-    final chatMemoryListNotifier =
-        ref.watch(chatMemoryListNotiferProvider.notifier);
-
-    //現在選択されているメモリのインデックスを取得
-    final currentMemoryIndex = ref.watch(currentMemoryIndexProvider);
-
-    //メモリリストから現在選択されているメモリを取得
-    final currentChatMemory = ref
-        .watch(chatMemoryListNotifier.getChatMemoryAtIndex(currentMemoryIndex));
-    final currentChatMemoryState = ref.watch(chatMemoryListNotifier
-        .getChatMemoryAtIndex(currentMemoryIndex)
-        .notifier);
-
     return LayoutBuilder(
       builder: (context, constraints) {
         // 画面幅によって表示するウィジェットを変更するため、リストを作成する。
@@ -73,40 +71,60 @@ class MyHomePage extends ConsumerWidget with WidgetsBindingObserver {
             child: DrawerList(),
           ));
         }
-        return Scaffold(
-          appBar: AppBar(
-            title: Text(
-                "Chatter GPT - ${currentChatMemory.memoryName ?? 'Session: $currentMemoryIndex'}"),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.edit),
-                onPressed: () async {
-                  // セッションの名前を変更するダイアログを表示する
-                  final String? result = await showDialog(
-                    context: context,
-                    builder: (context) => TextInputDialog(
-                      title: l10n.dialog_change_session_name_title,
-                      textFieldHint: l10n.dialog_change_session_name_textfield,
-                      positiveButtonText: l10n.dialog_change_session_name_ok,
-                      negativeButtonText: l10n.message_cancel,
-                      defaultValue: currentChatMemory.memoryName,
-                    ),
-                  );
-                  if (result != null) {
-                    currentChatMemoryState.setMemoryName(result);
-                  }
-                },
-              )
-            ],
-          ),
-          body: FutureBuilder(
-            future: getAPIKey(context, ref),
-            builder: (context, snapshot) {
-              // APIキーが取得できるまでプログレスバーを表示する
-              if (!snapshot.hasData) {
-                return const CircularProgressIndicator();
-              }
-              return Row(
+        return FutureBuilder(
+          future: initSetup(context, ref),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return const Scaffold(
+                body: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              );
+            }
+
+            //メモリリストを取得する
+            final chatMemoryListNotifier =
+                ref.watch(chatMemoryListNotiferProvider.notifier);
+
+            //現在選択されているメモリのインデックスを取得
+            final currentMemoryIndex = ref.watch(currentMemoryIndexProvider);
+
+            //メモリリストから現在選択されているメモリを取得
+            final currentChatMemory = ref.watch(chatMemoryListNotifier
+                .getChatMemoryAtIndex(currentMemoryIndex));
+            final currentChatMemoryState = ref.watch(chatMemoryListNotifier
+                .getChatMemoryAtIndex(currentMemoryIndex)
+                .notifier);
+
+            return Scaffold(
+              appBar: AppBar(
+                title: Text(
+                    "Chatter GPT - ${currentChatMemory.memoryName ?? 'Session: $currentMemoryIndex'}"),
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.edit),
+                    onPressed: () async {
+                      // セッションの名前を変更するダイアログを表示する
+                      final String? result = await showDialog(
+                        context: context,
+                        builder: (context) => TextInputDialog(
+                          title: l10n.dialog_change_session_name_title,
+                          textFieldHint:
+                              l10n.dialog_change_session_name_textfield,
+                          positiveButtonText:
+                              l10n.dialog_change_session_name_ok,
+                          negativeButtonText: l10n.message_cancel,
+                          defaultValue: currentChatMemory.memoryName,
+                        ),
+                      );
+                      if (result != null) {
+                        currentChatMemoryState.setMemoryName(result);
+                      }
+                    },
+                  )
+                ],
+              ),
+              body: Row(
                 children: [
                   ...rowChildList,
                   Expanded(
@@ -116,16 +134,16 @@ class MyHomePage extends ConsumerWidget with WidgetsBindingObserver {
                     ),
                   ),
                 ],
-              );
-            },
-          ),
-          drawer: constraints.maxWidth < 600
-              ? const Drawer(
-                  child: DrawerList(
-                    isHeader: true,
-                  ),
-                )
-              : null,
+              ),
+              drawer: constraints.maxWidth < 600
+                  ? const Drawer(
+                      child: DrawerList(
+                        isHeader: true,
+                      ),
+                    )
+                  : null,
+            );
+          },
         );
       },
     );
