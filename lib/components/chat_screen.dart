@@ -98,6 +98,7 @@ class ChatScreen extends ConsumerWidget {
                     flex: 1,
                     child: ChatCard(
                       content: chat.content,
+                      isAccentColor: chat.role == OpenAIChatMessageRole.user,
                     ),
                   ),
                   const Expanded(flex: 1, child: SizedBox()),
