@@ -29,6 +29,9 @@ class SettingsPage extends ConsumerWidget {
       body: ListView(
         children: [
           ListTile(
+            title: Text(l10n.settings_tile_general_settings),
+          ),
+          ListTile(
             leading: const Icon(Icons.vpn_key),
             title: Text(l10n.settings_change_api_key),
             onTap: () async {
@@ -38,7 +41,24 @@ class SettingsPage extends ConsumerWidget {
                 await settingsState.setAPIKey(response);
               }
             },
-          )
+          ),
+          const Divider(),
+          ListTile(
+            title: Text(l10n.settings_tile_other_settings),
+          ),
+          ListTile(
+              leading: const Icon(Icons.info),
+              title: Text(l10n.settings_application_info),
+              onTap: () {
+                showAboutDialog(
+                  context: context,
+                  applicationIcon: const SizedBox(
+                    width: 48,
+                    height: 48,
+                    child: FlutterLogo(),
+                  ),
+                );
+              })
         ],
       ),
     );
